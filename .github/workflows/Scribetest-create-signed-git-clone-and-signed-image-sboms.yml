@@ -38,7 +38,7 @@ jobs:
         scribe-enable: true
         components: commits,packages,files,dep
         product-key: "Test009"
-        product-version: ${{ env.PRODUCT_VERSION }}
+        product-version: "scribe-demo-prod-v13"
         scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
         format: attest
         author-name: $AUTHOR_NAME
@@ -58,8 +58,8 @@ jobs:
         target: 'docker:github-action:${{ github.sha }}'
         scribe-enable: true
         components: commits,packages,files,dep
-        product-key: "Test_009"
-        product-version: ${{ env.PRODUCT_VERSION }}
+        product-key: "Test009"
+        product-version: "scribe-demo-prod-v12"
         scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
         format: attest
         force: true
@@ -83,8 +83,8 @@ jobs:
       with:
         target: 'docker:github-action:${{ github.sha }}'
         scribe-enable: true
-        product-key: "Test_009"
-        product-version: ${{ env.PRODUCT_VERSION }}
+        product-key: "Test009"
+        product-version: "scribe-demo-prod-v12"
         scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
         format: attest-slsa
         force: true
