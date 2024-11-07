@@ -29,7 +29,7 @@ jobs:
       id-token: write
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Generate signed SBOM for repo content
       uses: scribe-security/action-bom@master
