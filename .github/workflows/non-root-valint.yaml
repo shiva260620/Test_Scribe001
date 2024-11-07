@@ -1,0 +1,65 @@
+
+
+name: Valint non-root demo
+
+on: 
+  workflow_dispatch:
+  push:
+
+jobs:
+  non-root:
+    runs-on: ubuntu-latest
+    steps:
+
+      # Setting github env with current runner UID.
+      - name: Set Actions user id
+        id: get_uid
+        run: |
+          actions_user_id=`id -u $USER`
+          actions_group_id=`id -g $USER`
+          echo $actions_user_id
+          echo "USERID=$actions_user_id" >> $GITHUB_ENV
+          echo "GROUPID=$actions_group_id" >> $GITHUB_ENV
+      
+      # Running containerized valint action setting the user it should run with.
+      - name: Run non root valint
+        id: valint_json
+        uses: scribe-security/action-bom@dev
+        with:
+           target: 'busybox:latest'
+           verbose: 2
+           format: json
+           force: true
+           output-file: non-root.sbom.json
+        env:
+          USERID: ${{ env.USERID }} ## Usally '1001' for github hosted workers
+          USERNAME: runner ## usally 'runner' for github hosted workers 
+          GROUP: docker
+          GROUPID: ${{ env.GROUPID }}
+
+      # Show current runner user info and output file permissions
+      - name: Show info
+        run: |
+          id
+          ls -lhR scribe
+          ls -lh non-root.sbom.json
+
+  with-root:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Run root valint
+        id: valint_json
+        uses: scribe-security/action-bom@v0.4.2
+        with:
+           target: 'busybox:latest'
+           verbose: 2
+           format: json
+           force: true
+           output-file: root.sbom.json
+
+      - name: Show info
+        run: |
+          id
+          ls -lhR scribe
+          ls -lh root.sbom.json

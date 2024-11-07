@@ -1,0 +1,109 @@
+name: Scribe Signed Git Cloned and Signed Image SBOM
+on:
+  workflow_run:
+        workflows: ['Scribetest-create-signed-git-commit-sbom.yml']
+        types: [completed]
+  workflow_dispatch:
+env:
+  IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
+  AUTHOR_NAME: Jane Doe
+  AUTHOR_EMAIL: info@scribesecurity.com
+  AUTHOR_PHONE: 111-1111-11
+  SUPPLIER_NAME: Scribe-Security
+  SUPPLIER_URL: www.scribesecurity.com
+  SUPPLIER_EMAIL: info@scribesecurity.com
+  SUPPLIER_PHONE: 001-001-0011
+  USER_DATA: service-binding
+  PRODUCT_NAME: Scribe-Synthetic-Testing
+  PRODUCT_VERSION: "6"
+  COMPANY_CA: ${{ secrets.COMPANY_CA }}
+  SIGNER_CERT: ${{ secrets.SIGNER_CERT }}
+  SIGNER_KEY: ${{ secrets.SIGNER_KEY }}
+
+jobs:     
+  Generate-Signed-SBOM:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Generate signed SBOM for repo content
+      uses: scribe-security/action-bom@master
+      with:
+        target: 'git:.'
+        scribe-enable: true
+        components: commits,packages,files,dep
+        product-key: "scribe-demo-prod-v1773"
+        product-version: ${{ env.PRODUCT_VERSION }}
+        scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+        format: attest
+        author-name: $AUTHOR_NAME
+        author-email: $AUTHOR_EMAIL
+        author-phone: $AUTHOR_PHONE
+        supplier-name: $SUPPLIER_NAME
+        supplier-url: $SUPPLIER_URL
+        supplier-email: $SUPPLIER_EMAIL 
+        supplier-phone: $SUPPLIER_PHONE
+
+    - name: Build the Docker image
+      run: docker build . -t github-action:${{ github.sha }}
+
+    - name: Generate signed SBOM for docker image
+      uses: scribe-security/action-bom@master
+      with:
+        target: 'docker:github-action:${{ github.sha }}'
+        scribe-enable: true
+        components: commits,packages,files,dep
+        product-key: "scribe-demo-prod-v1773"
+        product-version: ${{ env.PRODUCT_VERSION }}
+        scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+        format: attest
+        force: true
+        author-name: $AUTHOR_NAME
+        author-email: $AUTHOR_EMAIL
+        author-phone: $AUTHOR_PHONE
+        supplier-name: $SUPPLIER_NAME
+        supplier-url: $SUPPLIER_URL
+        supplier-email: $SUPPLIER_EMAIL 
+        supplier-phone: $SUPPLIER_PHONE
+
+# Reference: https://github.com/scribe-security/scribe-training-vue-project/blob/main/.github/workflows/build_pipeline_signed.yaml
+    - uses: actions/upload-artifact@v4
+      with:
+        name: evidence
+        path: scribe/valint/*.json*
+
+    - name: Generate SLSA provenance
+      id: valint_attest_slsa_master
+      uses: scribe-security/action-bom@master
+      with:
+        target: 'docker:github-action:${{ github.sha }}'
+        scribe-enable: true
+        product-key: "scribe-demo-prod-v13"
+        product-version: ${{ env.PRODUCT_VERSION }}
+        scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+        format: attest-slsa
+        force: true
+  
+    - name: Upload SLSA provenance output
+      uses: actions/upload-artifact@v3
+      with:
+        name: provenance
+        path: ${{ steps.valint_attest_slsa_master.outputs.OUTPUT_PATH }}
+        
+  # trigger-lambda:
+  #   runs-on: ubuntu-latest
+  #   needs: [Generate-Signed-SBOM]
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v2
+
+  #   - name: Make curl request
+  #     env:
+  #       API: ${{ secrets.api }}
+  #     run: |
+  #       curl https://h70xtrbji1.execute-api.us-west-2.amazonaws.com/scribe-synthetic-lambda?api=${API}

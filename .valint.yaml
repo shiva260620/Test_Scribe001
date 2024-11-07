@@ -1,0 +1,21 @@
+scribe:
+  auth:
+    login-url: https://login.scribesecurity.com
+    grant-type: client_credentials
+    enable: true
+    audience: api.production.scribesecurity.com
+  url: https://api.scribesecurity.com
+  enable: true
+attest:
+    cocosign:
+        signer:
+            x509:
+                enable: true
+                private: env://SIGNER_KEY
+                cert: env://SIGNER_CERT
+                ca: env://COMPANY_CA
+        verifier:
+            x509:
+                enable: true
+                cert: env://SIGNER_CERT
+                ca: env://COMPANY_CA

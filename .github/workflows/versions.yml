@@ -1,0 +1,29 @@
+name: Increment and Update Product Version
+
+on:
+  workflow_dispatch:
+
+jobs:
+  increment-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Current Product Version
+        id: print_version
+        run: |
+          echo "Current PRODUCT_VERSION is: ${{ vars.PRODUCT_VERSION }}"
+
+      - name: Increment Product Version
+        id: increment_version
+        run: |
+          CURRENT_VERSION=${{ vars.PRODUCT_VERSION }}
+          NEW_VERSION=$((CURRENT_VERSION + 1))
+          echo "New PRODUCT_VERSION will be: $NEW_VERSION"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Update Product Version in Repository Variables
+        run: |
+          curl -X PATCH \
+            -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/actions/variables/PRODUCT_VERSION \
+            -d '{"name":"PRODUCT_VERSION", "value":"'"${{ env.new_version }}"'"}'
