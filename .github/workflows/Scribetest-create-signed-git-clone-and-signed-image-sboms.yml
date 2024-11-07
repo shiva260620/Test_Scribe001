@@ -15,7 +15,7 @@ env:
   SUPPLIER_PHONE: 001-001-0011
   USER_DATA: service-binding
   PRODUCT_NAME: Scribe-Synthetic-Testing
-  PRODUCT_VERSION: "6"
+  PRODUCT_VERSION: "5"
   COMPANY_CA: ${{ secrets.COMPANY_CA }}
   SIGNER_CERT: ${{ secrets.SIGNER_CERT }}
   SIGNER_KEY: ${{ secrets.SIGNER_KEY }}
@@ -58,7 +58,7 @@ jobs:
         target: 'docker:github-action:${{ github.sha }}'
         scribe-enable: true
         components: commits,packages,files,dep
-        product-key: "scribe-demo-prod-v1773"
+        product-key: "Test_005"
         product-version: ${{ env.PRODUCT_VERSION }}
         scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
         format: attest
@@ -83,7 +83,7 @@ jobs:
       with:
         target: 'docker:github-action:${{ github.sha }}'
         scribe-enable: true
-        product-key: "scribe-demo-prod-v13"
+        product-key: "Test_005"
         product-version: ${{ env.PRODUCT_VERSION }}
         scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
         format: attest-slsa
