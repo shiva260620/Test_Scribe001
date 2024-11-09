@@ -29,15 +29,15 @@ jobs:
       id-token: write
 
     steps:
-    - uses: actions/checkout@v3
-    
+    - uses: actions/checkout@v4
+
     - name: Generate signed SBOM for repo content
       uses: scribe-security/action-bom@master
       with:
         target: 'git:.'
         scribe-enable: true
         components: commits,packages,files,dep
-        product-key: "Shivam"
+        product-key: "scribe-demo-prod-v1773"
         product-version: ${{ env.PRODUCT_VERSION }}
         scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
         format: attest
@@ -58,7 +58,7 @@ jobs:
         target: 'docker:github-action:${{ github.sha }}'
         scribe-enable: true
         components: commits,packages,files,dep
-        product-key: "Shivam"
+        product-key: "scribe-demo-prod-v1773"
         product-version: ${{ env.PRODUCT_VERSION }}
         scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
         format: attest
@@ -72,7 +72,7 @@ jobs:
         supplier-phone: $SUPPLIER_PHONE
 
 # Reference: https://github.com/scribe-security/scribe-training-vue-project/blob/main/.github/workflows/build_pipeline_signed.yaml
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: evidence
         path: scribe/valint/*.json*
@@ -83,18 +83,18 @@ jobs:
       with:
         target: 'docker:github-action:${{ github.sha }}'
         scribe-enable: true
-        product-key: "Shivam"
+        product-key: "scribe-demo-prod-v13"
         product-version: ${{ env.PRODUCT_VERSION }}
         scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
         format: attest-slsa
         force: true
-  
+
     - name: Upload SLSA provenance output
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: provenance
         path: ${{ steps.valint_attest_slsa_master.outputs.OUTPUT_PATH }}
-        
+
   # trigger-lambda:
   #   runs-on: ubuntu-latest
   #   needs: [Generate-Signed-SBOM]
