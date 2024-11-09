@@ -134,7 +134,7 @@ jobs:
       id: slsa_ver1
       uses: scribe-security/action-verify@master
       with:
-        target: ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}-${{ github.run_number }}
+        target: 'docker:github-action:${{ github.sha }}'
         scribe-enable: true
         product-key: ${{ env.APP_NAME }}
         product-version: ${{ env.PRODUCT_VERSION }}
@@ -148,7 +148,7 @@ jobs:
       id: slsa_ver2
       uses: scribe-security/action-verify@master
       with:
-        target: ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}-${{ github.run_number }}
+        target: 'docker:github-action:${{ github.sha }}'
         scribe-enable: true
         product-key: ${{ env.APP_NAME }}
         product-version: ${{ env.PRODUCT_VERSION }}
