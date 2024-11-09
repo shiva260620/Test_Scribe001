@@ -108,11 +108,11 @@ jobs:
         format: attest-slsa
         force: true
   
-    - name: Upload SLSA provenance output
-      uses: actions/upload-artifact@v2
-      with:
-        name: provenance
-        path: ${{ steps.valint_attest_slsa_master.outputs.OUTPUT_PATH }}
+    - #name: Upload SLSA provenance output
+      #uses: actions/upload-artifact@v2
+      #with:
+       # name: provenance
+      #  path: ${{ steps.valint_attest_slsa_master.outputs.OUTPUT_PATH }}
         
   # trigger-lambda:
   #   runs-on: ubuntu-latest
