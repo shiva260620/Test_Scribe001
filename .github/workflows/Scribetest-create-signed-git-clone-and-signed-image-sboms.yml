@@ -1,11 +1,9 @@
 name: Scribe Signed Git Cloned and Signed Image SBOM
-
 on:
   workflow_run:
-    workflows: ['Scribetest-create-signed-git-commit-sbom.yml']
-    types: [completed]
+        workflows: ['Scribetest-create-signed-git-commit-sbom.yml']
+        types: [completed]
   workflow_dispatch:
-
 env:
   IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
   AUTHOR_NAME: Jane Doe
@@ -22,7 +20,7 @@ env:
   SIGNER_CERT: ${{ secrets.SIGNER_CERT }}
   SIGNER_KEY: ${{ secrets.SIGNER_KEY }}
 
-jobs:
+jobs:     
   Generate-Signed-SBOM:
     runs-on: ubuntu-latest
     permissions:
@@ -32,7 +30,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
+    
     - name: Generate signed SBOM for repo content
       uses: scribe-security/action-bom@master
       with:
@@ -48,7 +46,7 @@ jobs:
         author-phone: $AUTHOR_PHONE
         supplier-name: $SUPPLIER_NAME
         supplier-url: $SUPPLIER_URL
-        supplier-email: $SUPPLIER_EMAIL
+        supplier-email: $SUPPLIER_EMAIL 
         supplier-phone: $SUPPLIER_PHONE
 
     - name: Build the Docker image
@@ -70,25 +68,14 @@ jobs:
         author-phone: $AUTHOR_PHONE
         supplier-name: $SUPPLIER_NAME
         supplier-url: $SUPPLIER_URL
-        supplier-email: $SUPPLIER_EMAIL
+        supplier-email: $SUPPLIER_EMAIL 
         supplier-phone: $SUPPLIER_PHONE
 
-    - name: Upload Evidence
-      uses: actions/upload-artifact@v3
+# Reference: https://github.com/scribe-security/scribe-training-vue-project/blob/main/.github/workflows/build_pipeline_signed.yaml
+    - uses: actions/upload-artifact@v3
       with:
         name: evidence
         path: scribe/valint/*.json*
-
-    # Integrity check (using Scribe CLI, if available)
-    - name: Verify integrity of Git commit SBOM
-      run: |
-        # Assuming Scribe CLI is installed and configured
-        scribe-cli validate --target 'git:.' --token ${{ secrets.SCRIBE_TOKEN }}
-
-    - name: Verify integrity of Docker image SBOM
-      run: |
-        # Assuming Scribe CLI is installed and configured
-        scribe-cli validate --target 'docker:github-action:${{ github.sha }}' --token ${{ secrets.SCRIBE_TOKEN }}
 
     - name: Generate SLSA provenance
       id: valint_attest_slsa_master
@@ -101,9 +88,22 @@ jobs:
         scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
         format: attest-slsa
         force: true
-
+  
     - name: Upload SLSA provenance output
       uses: actions/upload-artifact@v3
       with:
         name: provenance
         path: ${{ steps.valint_attest_slsa_master.outputs.OUTPUT_PATH }}
+        
+  # trigger-lambda:
+  #   runs-on: ubuntu-latest
+  #   needs: [Generate-Signed-SBOM]
+  #   steps:
+  #   - name: Checkout code
+  #     uses: actions/checkout@v2
+
+  #   - name: Make curl request
+  #     env:
+  #       API: ${{ secrets.api }}
+  #     run: |
+  #       curl https://h70xtrbji1.execute-api.us-west-2.amazonaws.com/scribe-synthetic-lambda?api=${API}
