@@ -29,7 +29,7 @@ jobs:
       id-token: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     
     - name: Generate signed SBOM for repo content
       uses: scribe-security/action-bom@master
@@ -72,7 +72,7 @@ jobs:
         supplier-phone: $SUPPLIER_PHONE
 
 # Reference: https://github.com/scribe-security/scribe-training-vue-project/blob/main/.github/workflows/build_pipeline_signed.yaml
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v3
       with:
         name: evidence
         path: scribe/valint/*.json*
@@ -90,7 +90,7 @@ jobs:
         force: true
   
     - name: Upload SLSA provenance output
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: provenance
         path: ${{ steps.valint_attest_slsa_master.outputs.OUTPUT_PATH }}
