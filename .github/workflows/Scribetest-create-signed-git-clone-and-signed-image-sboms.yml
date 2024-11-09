@@ -48,7 +48,7 @@ jobs:
         author-phone: $AUTHOR_PHONE
         supplier-name: $SUPPLIER_NAME
         supplier-url: $SUPPLIER_URL
-        supplier-email: $SUPPLIER_EMAIL 
+        supplier-email: $SUPPLIER_EMAIL
         supplier-phone: $SUPPLIER_PHONE
 
     - name: Build the Docker image
@@ -69,8 +69,8 @@ jobs:
         author-email: $AUTHOR_EMAIL
         author-phone: $AUTHOR_PHONE
         supplier-name: $SUPPLIER_NAME
-        supplier-url: $SUPPLPLIER_URL
-        supplier-email: $SUPPLIER_EMAIL 
+        supplier-url: $SUPPLIER_URL
+        supplier-email: $SUPPLIER_EMAIL
         supplier-phone: $SUPPLIER_PHONE
 
     - uses: actions/upload-artifact@v4
