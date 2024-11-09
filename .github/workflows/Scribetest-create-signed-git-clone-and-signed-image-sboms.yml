@@ -1,8 +1,8 @@
 name: Scribe Signed Git Cloned and Signed Image SBOM
 on:
   workflow_run:
-        workflows: ['Scribetest-create-signed-git-commit-sbom.yml']
-        types: [completed]
+    workflows: ['Scribetest-create-signed-git-commit-sbom.yml']
+    types: [completed]
   workflow_dispatch:
 env:
   IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
@@ -34,7 +34,7 @@ jobs:
     - name: Generate signed SBOM for repo content
       uses: scribe-security/action-bom@master
       with:
-        target: 'git:.'
+        target: 'git:.'  # Targeting Git repository
         scribe-enable: true
         components: commits,packages,files,dep
         product-key: "Shivam"
@@ -55,7 +55,7 @@ jobs:
     - name: Generate signed SBOM for docker image
       uses: scribe-security/action-bom@master
       with:
-        target: 'docker:github-action:${{ github.sha }}'
+        target: 'docker:github-action:${{ github.sha }}'  # Targeting the built Docker image
         scribe-enable: true
         components: commits,packages,files,dep
         product-key: "Shivam"
@@ -71,7 +71,6 @@ jobs:
         supplier-email: $SUPPLIER_EMAIL 
         supplier-phone: $SUPPLIER_PHONE
 
-# Reference: https://github.com/scribe-security/scribe-training-vue-project/blob/main/.github/workflows/build_pipeline_signed.yaml
     - uses: actions/upload-artifact@v4
       with:
         name: evidence
@@ -81,7 +80,7 @@ jobs:
       id: valint_attest_slsa_master
       uses: scribe-security/action-bom@master
       with:
-        target: 'docker:github-action:${{ github.sha }}'
+        target: 'docker:github-action:${{ github.sha }}'  # Targeting the built Docker image
         scribe-enable: true
         product-key: "Shivam"
         product-version: ${{ env.PRODUCT_VERSION }}
@@ -94,16 +93,3 @@ jobs:
       with:
         name: provenance
         path: ${{ steps.valint_attest_slsa_master.outputs.OUTPUT_PATH }}
-
-  # trigger-lambda:
-  #   runs-on: ubuntu-latest
-  #   needs: [Generate-Signed-SBOM]
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v2
-
-  #   - name: Make curl request
-  #     env:
-  #       API: ${{ secrets.api }}
-  #     run: |
-  #       curl https://h70xtrbji1.execute-api.us-west-2.amazonaws.com/scribe-synthetic-lambda?api=${API}
