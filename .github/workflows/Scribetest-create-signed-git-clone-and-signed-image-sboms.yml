@@ -111,7 +111,7 @@ jobs:
       id: slsa_provenance
       uses: scribe-security/action-slsa@master
       with:
-        target: ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}-${{ github.run_number }}
+        target: 'docker:github-action:${{ github.sha }}'
         scribe-enable: true
         product-key: ${{ env.APP_NAME }}
         product-version: ${{ env.PRODUCT_VERSION }}
