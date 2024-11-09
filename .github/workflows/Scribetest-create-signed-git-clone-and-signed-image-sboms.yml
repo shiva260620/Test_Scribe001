@@ -91,7 +91,7 @@ jobs:
         force: true
 
     - name: Upload SLSA provenance output
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
         name: provenance
         path: ${{ steps.valint_attest_slsa_master.outputs.OUTPUT_PATH }}
