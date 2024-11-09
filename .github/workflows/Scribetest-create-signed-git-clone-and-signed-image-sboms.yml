@@ -79,35 +79,16 @@ jobs:
         name: evidence
         path: scribe/valint/*.json*
 
-    # New step for Integrity Check (Verification)
+    # Integrity check (using Scribe CLI, if available)
     - name: Verify integrity of Git commit SBOM
-      uses: scribe-security/action-validate@master
-      with:
-        target: 'git:.'
-        scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-        format: attest
-        author-name: $AUTHOR_NAME
-        author-email: $AUTHOR_EMAIL
-        author-phone: $AUTHOR_PHONE
-        supplier-name: $SUPPLIER_NAME
-        supplier-url: $SUPPLIER_URL
-        supplier-email: $SUPPLIER_EMAIL
-        supplier-phone: $SUPPLIER_PHONE
+      run: |
+        # Assuming Scribe CLI is installed and configured
+        scribe-cli validate --target 'git:.' --token ${{ secrets.SCRIBE_TOKEN }}
 
     - name: Verify integrity of Docker image SBOM
-      uses: scribe-security/action-validate@master
-      with:
-        target: 'docker:github-action:${{ github.sha }}'
-        scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-        format: attest
-        force: true
-        author-name: $AUTHOR_NAME
-        author-email: $AUTHOR_EMAIL
-        author-phone: $AUTHOR_PHONE
-        supplier-name: $SUPPLIER_NAME
-        supplier-url: $SUPPLIER_URL
-        supplier-email: $SUPPLIER_EMAIL
-        supplier-phone: $SUPPLIER_PHONE
+      run: |
+        # Assuming Scribe CLI is installed and configured
+        scribe-cli validate --target 'docker:github-action:${{ github.sha }}' --token ${{ secrets.SCRIBE_TOKEN }}
 
     - name: Generate SLSA provenance
       id: valint_attest_slsa_master
