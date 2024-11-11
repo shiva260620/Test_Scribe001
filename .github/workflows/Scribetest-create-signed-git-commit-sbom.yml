@@ -51,6 +51,7 @@ jobs:
 
       - name: Build the Docker image
         run: docker build . -t github-action:${{ github.sha }}
+
       - name: Generate signed SBOM for Docker image
         uses: scribe-security/action-bom@master
         with:
@@ -101,6 +102,23 @@ jobs:
           supplier-url: ${{ env.SUPPLIER_URL }}
           supplier-email: ${{ env.SUPPLIER_EMAIL }}
           supplier-phone: ${{ env.SUPPLIER_PHONE }}
+
+      # Add this new step to generate SLSA provenance id
+      - name: Generate SLSA provenance id
+        id: valint_attest_slsa_master
+        uses: scribe-security/action-bom@master
+        with:
+          target: "docker:${{ env.IMAGE_NAME }}:${{ env.PRODUCT_VERSION }}"
+          scribe-enable: true
+          product-key: ${{ env.PRODUCT_NAME }}
+          product-version: ${{ env.PRODUCT_VERSION }}
+          scribe-client-id: ${{ secrets.CLIENT_ID }}
+          scribe-client-secret: ${{ secrets.CLIENT_SECRET }}
+          scribe-url: ${{ secrets.SCRIBE_URL }}
+          scribe-login-url: ${{ secrets.SCRIBE_LOGIN_URL }}
+          scribe-auth-audience: ${{ secrets.SCRIBE_AUDIENCE }}
+          format: attest-slsa
+          force: true
 
   # Step 2a: Verify SLSA Level 1 Policy
   verify-slsa-l1:
