@@ -41,7 +41,7 @@ jobs:
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
-          config: json
+          config: .valint.yaml
           author-name: ${{ env.AUTHOR_NAME }}
           author-email: ${{ env.AUTHOR_EMAIL }}
           author-phone: ${{ env.AUTHOR_PHONE }}
@@ -62,7 +62,7 @@ jobs:
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
-          config: json
+          config: .valint.yaml
           force: true
           author-name: ${{ env.AUTHOR_NAME }}
           author-email: ${{ env.AUTHOR_EMAIL }}
@@ -96,7 +96,7 @@ jobs:
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: statement-slsa
           force: true
-          config: json
+          config: .valint.yaml
           author-name: ${{ env.AUTHOR_NAME }}
           author-email: ${{ env.AUTHOR_EMAIL }}
           author-phone: ${{ env.AUTHOR_PHONE }}
@@ -128,7 +128,7 @@ jobs:
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
-          config: json
+          config: .valint.yaml
           rule: slsa/l1-provenance-exists@v1
           verbose: 2
 
@@ -155,6 +155,6 @@ jobs:
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
-          config: json
+          config: .valint.yaml
           rule: slsa/l2-provenance-authenticated@v1
           verbose: 2
