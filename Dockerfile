@@ -10,20 +10,23 @@ COPY package.* ./
 # Install the application dependencies
 RUN npm install
 
-# Install curl, bash, and Syft (for SBOM generation)
-RUN apk add --no-cache curl bash \
-    && curl -sSL https://github.com/anchore/syft/releases/download/v0.70.0/syft-v0.70.0-linux-amd64 -o /usr/local/bin/syft \
-    && chmod +x /usr/local/bin/syft \
-    && syft --version  # Ensure Syft is installed and available
+# Install bash, curl, and other necessary packages for installing Syft
+RUN apk add --no-cache bash curl libc6-compat
+
+# Download and install Syft using a more robust method compatible with Alpine
+RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+# Verify Syft installation
+RUN syft --version
 
 # Copy the source code into the container
 COPY src ./src
 
-# Optionally, generate an SBOM (if using Syft)
+# Generate an SBOM with Syft
 RUN syft . -o json > /app/sbom.json
 
 # Run Scribe Security checks on the generated SBOM
 RUN scribe run --context-type docker --output-directory /app/cribe-output --sbom /app/sbom.json -P $SCRIBE_TOKEN
 
 # Set the default command to run the application
-CMD node src/app.js
+CMD ["node", "src/app.js"]
