@@ -31,31 +31,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Generate signed SBOM for repository content
-        uses: scribe-security/action-bom@master
-        with:
-          target: 'git:.'
-          scribe-enable: true
-          components: commits,packages,files,dep
-          product-key: "Rahul"
-          product-version: ${{ env.PRODUCT_VERSION }}
-          scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-          format: attest
-          author-name: $AUTHOR_NAME
-          author-email: $AUTHOR_EMAIL
-          author-phone: $AUTHOR_PHONE
-          supplier-name: $SUPPLIER_NAME
-          supplier-url: $SUPPLIER_URL
-          supplier-email: $SUPPLIER_EMAIL
-          supplier-phone: $SUPPLIER_PHONE
+      - name: Build Docker Image
+        run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
 
-      - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
 
       - name: Generate signed SBOM for Docker image
         uses: scribe-security/action-bom@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
           scribe-enable: true
           components: commits,packages,files,dep
           product-key: "Rahul"
@@ -76,19 +61,21 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
       id-token: write
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
+      - name: Build Docker Image
+        run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
+
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
 
       - name: Generate SLSA provenance
         uses: scribe-security/action-bom@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
           scribe-enable: true
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
@@ -108,19 +95,15 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
       id-token: write
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
-
       - name: Verify SLSA Level 1
         uses: scribe-security/action-verify@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
           scribe-enable: true
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
@@ -135,19 +118,15 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
       id-token: write
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
-
       - name: Verify SLSA Level 2
         uses: scribe-security/action-verify@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
           scribe-enable: true
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
