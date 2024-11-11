@@ -5,14 +5,6 @@ on:
 
 env:
   IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
-  AUTHOR_NAME: Jane Doe
-  AUTHOR_EMAIL: info@scribesecurity.com
-  PRODUCT_VERSION: "9"
-  PRODUCT_NAME: Scribe-Synthetic-Testing
-  COMPANY_CA: ${{ secrets.COMPANY_CA }}
-  SIGNER_CERT: ${{ secrets.SIGNER_CERT }}
-  SIGNER_KEY: ${{ secrets.SIGNER_KEY }}
-  API: ${{ secrets.api }}
 
 jobs:
   verify-policy:
@@ -27,16 +19,25 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }} .
+
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
+
       - name: Verify SLSA Level 1
         id: slsa_ver1
         uses: scribe-security/action-verify@master
         with:
-          target: ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}-${{ github.run_number }}
+          target: ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
           scribe-enable: true
-          product-key: ${{ env.PRODUCT_NAME }}
+          product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
           config: .valint.yaml
           rule: slsa/l1-provenance-exists@v1
-          verbose: 3
+          verbose: 2
