@@ -20,18 +20,19 @@ env:
   SIGNER_KEY: ${{ secrets.SIGNER_KEY }}
 
 jobs:
-  # Step 1-a: Generate Signed SBOM for Docker Image
-  image-attest:
+  valint-image-attest:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
-
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Generate signed SBOM for repository content
+        id: valint_attest_repo
         uses: scribe-security/action-bom@master
         with:
           target: 'git:.'
@@ -51,7 +52,9 @@ jobs:
 
       - name: Build the Docker image
         run: docker build . -t github-action:${{ github.sha }}
+
       - name: Generate signed SBOM for Docker image
+        id: valint_attest_image
         uses: scribe-security/action-bom@master
         with:
           target: 'docker:github-action:${{ github.sha }}'
@@ -70,21 +73,22 @@ jobs:
           supplier-email: ${{ env.SUPPLIER_EMAIL }}
           supplier-phone: ${{ env.SUPPLIER_PHONE }}
 
-  # Step 1-b: Generate SLSA Provenance Record
-  generate-provenance:
+  valint-generate-provenance:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
-
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Build the Docker image
         run: docker build . -t github-action:${{ github.sha }}
 
       - name: Generate SLSA provenance
+        id: valint_provenance
         uses: scribe-security/action-bom@master
         with:
           target: 'docker:github-action:${{ github.sha }}'
@@ -102,21 +106,22 @@ jobs:
           supplier-email: ${{ env.SUPPLIER_EMAIL }}
           supplier-phone: ${{ env.SUPPLIER_PHONE }}
 
-  # Step 2a: Verify SLSA Level 1 Policy
-  verify-slsa-l1:
+  valint-verify-slsa-l1:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
-
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Build the Docker image
         run: docker build . -t github-action:${{ github.sha }}
 
       - name: Verify SLSA Level 1
+        id: valint_verify_l1
         uses: scribe-security/action-slsa@master
         with:
           target: 'docker:github-action:${{ github.sha }}'
@@ -129,21 +134,22 @@ jobs:
           rule: slsa/l1-provenance-exists@v1
           verbose: 2
 
-  # Step 2b: Verify SLSA Level 2 Policy
-  verify-slsa-l2:
+  valint-verify-slsa-l2:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
-
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Build the Docker image
         run: docker build . -t github-action:${{ github.sha }}
 
       - name: Verify SLSA Level 2
+        id: valint_verify_l2
         uses: scribe-security/action-verify@master
         with:
           target: 'docker:github-action:${{ github.sha }}'
@@ -155,3 +161,8 @@ jobs:
           config: .valint.yaml
           rule: slsa/l2-provenance-authenticated@v1
           verbose: 2
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: valint-slsa-test
+          path: scribe/valint
