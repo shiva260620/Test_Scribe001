@@ -124,7 +124,7 @@ jobs:
           product-key: "Shivam1"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-          format: statement-slsa
+          format: attest
           config: .valint.yaml
           rule: slsa/l1-provenance-exists@v1
           verbose: 2
@@ -151,8 +151,7 @@ jobs:
           product-key: "Shivam1"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-          format: statement-slsa
+          format: attest
           config: .valint.yaml
           rule: slsa/l2-provenance-authenticated@v1
           verbose: 2
-          
