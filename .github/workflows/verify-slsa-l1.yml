@@ -1,0 +1,35 @@
+name: Verify SLSA Level 1 Policy
+
+on:
+  workflow_dispatch:
+
+env:
+  APP_NAME: Scribe-Synthetic-Testing
+  PRODUCT_VERSION: "9"
+
+jobs:
+  verify-policy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Verify SLSA Level 1
+        id: slsa_ver1
+        uses: scribe-security/action-verify@master
+        with:
+          target: 'docker:github-action:${{ github.sha }}'
+          scribe-enable: true
+          product-key: "Rahul"
+          product-version: ${{ env.PRODUCT_VERSION }}
+          scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+          format: attest
+          config: .valint.yaml
+          rule: slsa/l1-provenance-exists@v1
+          verbose: 2
