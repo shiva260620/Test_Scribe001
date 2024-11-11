@@ -117,7 +117,7 @@ jobs:
         run: docker build . -t github-action:${{ github.sha }}
 
       - name: Verify SLSA Level 1
-        uses: scribe-security/action-verify@master
+        uses: scribe-security/action-slsa@master
         with:
           target: 'docker:github-action:${{ github.sha }}'
           scribe-enable: true
