@@ -11,10 +11,10 @@ COPY package.* ./
 RUN npm install
 
 # Install curl, bash, and Syft (for SBOM generation)
-RUN apk add --no-cache curl bash && \
-    curl -sSL https://scribe.security/install | bash && \
-    curl -sSL https://github.com/anchore/syft/releases/download/v0.70.0/syft-v0.70.0-linux-amd64 -o /usr/local/bin/syft && \
-    chmod +x /usr/local/bin/syft
+RUN apk add --no-cache curl bash \
+    && curl -sSL https://github.com/anchore/syft/releases/download/v0.70.0/syft-v0.70.0-linux-amd64 -o /usr/local/bin/syft \
+    && chmod +x /usr/local/bin/syft \
+    && syft --version  # Ensure Syft is installed and available
 
 # Copy the source code into the container
 COPY src ./src
