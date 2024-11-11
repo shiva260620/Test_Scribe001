@@ -38,7 +38,7 @@ jobs:
         id: slsa_ver1
         uses: scribe-security/action-verify@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: 'git:.'
           scribe-enable: true
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
