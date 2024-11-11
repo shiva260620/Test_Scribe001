@@ -58,7 +58,7 @@ jobs:
         target: 'git:.'
         scribe-enable: true
         components: commits,packages,files,dep
-        product-key: "scribe-demo-prod-v13"
+        product-key: "01"
         product-version: ${{ env.PRODUCT_VERSION }}
         scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
         label: is_git_commit

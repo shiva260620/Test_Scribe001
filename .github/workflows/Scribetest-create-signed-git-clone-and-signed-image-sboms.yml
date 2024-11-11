@@ -37,7 +37,7 @@ jobs:
           target: 'git:.'
           scribe-enable: true
           components: commits,packages,files,dep
-          product-key: "Rahul"
+          product-key: "01"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
@@ -57,7 +57,7 @@ jobs:
           target: 'docker:github-action:${{ github.sha }}'
           scribe-enable: true
           components: commits,packages,files,dep
-          product-key: "Rahul"
+          product-key: "01"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
@@ -89,7 +89,7 @@ jobs:
         with:
           target: 'docker:github-action:${{ github.sha }}'
           scribe-enable: true
-          product-key: "Rahul"
+          product-key: "01"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: statement-slsa
@@ -121,7 +121,7 @@ jobs:
         with:
           target: 'docker:github-action:${{ github.sha }}'
           scribe-enable: true
-          product-key: "Rahul"
+          product-key: "01"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
@@ -148,11 +148,10 @@ jobs:
         with:
           target: 'docker:github-action:${{ github.sha }}'
           scribe-enable: true
-          product-key: "Rahul"
+          product-key: "01"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
           config: .valint.yaml
           rule: slsa/l2-provenance-authenticated@v1
           verbose: 2
-          
