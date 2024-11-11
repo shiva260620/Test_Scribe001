@@ -1,9 +1,6 @@
 name: SLSA Compliance Workflow
 
 on:
-  workflow_run:
-        workflows: ['Scribetest-create-signed-git-commit-sbom.yml']
-        types: [completed]
   workflow_dispatch:
 
 env:
