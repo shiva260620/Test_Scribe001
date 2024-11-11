@@ -41,21 +41,21 @@ jobs:
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
-          author-name: $AUTHOR_NAME
-          author-email: $AUTHOR_EMAIL
-          author-phone: $AUTHOR_PHONE
-          supplier-name: $SUPPLIER_NAME
-          supplier-url: $SUPPLIER_URL
-          supplier-email: $SUPPLIER_EMAIL
-          supplier-phone: $SUPPLIER_PHONE
+          author-name: ${{ env.AUTHOR_NAME }}
+          author-email: ${{ env.AUTHOR_EMAIL }}
+          author-phone: ${{ env.AUTHOR_PHONE }}
+          supplier-name: ${{ env.SUPPLIER_NAME }}
+          supplier-url: ${{ env.SUPPLIER_URL }}
+          supplier-email: ${{ env.SUPPLIER_EMAIL }}
+          supplier-phone: ${{ env.SUPPLIER_PHONE }}
 
       - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
+        run: docker build . -t ${{ env.IMAGE_NAME }}
 
       - name: Generate signed SBOM for Docker image
         uses: scribe-security/action-bom@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: 'docker:${{ env.IMAGE_NAME }}'
           scribe-enable: true
           components: commits,packages,files,dep
           product-key: "Rahul"
@@ -63,13 +63,13 @@ jobs:
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
           force: true
-          author-name: $AUTHOR_NAME
-          author-email: $AUTHOR_EMAIL
-          author-phone: $AUTHOR_PHONE
-          supplier-name: $SUPPLIER_NAME
-          supplier-url: $SUPPLIER_URL
-          supplier-email: $SUPPLIER_EMAIL
-          supplier-phone: $SUPPLIER_PHONE
+          author-name: ${{ env.AUTHOR_NAME }}
+          author-email: ${{ env.AUTHOR_EMAIL }}
+          author-phone: ${{ env.AUTHOR_PHONE }}
+          supplier-name: ${{ env.SUPPLIER_NAME }}
+          supplier-url: ${{ env.SUPPLIER_URL }}
+          supplier-email: ${{ env.SUPPLIER_EMAIL }}
+          supplier-phone: ${{ env.SUPPLIER_PHONE }}
 
   # Step 1-b: Generate SLSA Provenance Record
   generate-provenance:
@@ -83,7 +83,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
+        run: docker build . -t ${{ env.IMAGE_NAME }}
 
       - name: Generate SLSA provenance
         uses: scribe-security/action-bom@master
@@ -95,13 +95,13 @@ jobs:
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest-slsa
           force: true
-          author-name: $AUTHOR_NAME
-          author-email: $AUTHOR_EMAIL
-          author-phone: $AUTHOR_PHONE
-          supplier-name: $SUPPLIER_NAME
-          supplier-url: $SUPPLIER_URL
-          supplier-email: $SUPPLIER_EMAIL
-          supplier-phone: $SUPPLIER_PHONE
+          author-name: ${{ env.AUTHOR_NAME }}
+          author-email: ${{ env.AUTHOR_EMAIL }}
+          author-phone: ${{ env.AUTHOR_PHONE }}
+          supplier-name: ${{ env.SUPPLIER_NAME }}
+          supplier-url: ${{ env.SUPPLIER_URL }}
+          supplier-email: ${{ env.SUPPLIER_EMAIL }}
+          supplier-phone: ${{ env.SUPPLIER_PHONE }}
 
   # Step 2a: Verify SLSA Level 1 Policy
   verify-slsa-l1:
@@ -115,7 +115,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
+        run: docker build . -t ${{ env.IMAGE_NAME }}
 
       - name: Verify SLSA Level 1
         uses: scribe-security/action-verify@master
@@ -142,7 +142,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
+        run: docker build . -t ${{ env.IMAGE_NAME }}
 
       - name: Verify SLSA Level 2
         uses: scribe-security/action-verify@master
