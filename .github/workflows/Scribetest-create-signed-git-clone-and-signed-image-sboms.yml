@@ -44,13 +44,13 @@ jobs:
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
-          author-name: ${{ env.AUTHOR_NAME }}
-          author-email: ${{ env.AUTHOR_EMAIL }}
-          author-phone: ${{ env.AUTHOR_PHONE }}
-          supplier-name: ${{ env.SUPPLIER_NAME }}
-          supplier-url: ${{ env.SUPPLIER_URL }}
-          supplier-email: ${{ env.SUPPLIER_EMAIL }}
-          supplier-phone: ${{ env.SUPPLIER_PHONE }}
+          author-name: $AUTHOR_NAME
+          author-email: $AUTHOR_EMAIL
+          author-phone: $AUTHOR_PHONE
+          supplier-name: $SUPPLIER_NAME
+          supplier-url: $SUPPLIER_URL
+          supplier-email: $SUPPLIER_EMAIL 
+          supplier-phone: $SUPPLIER_PHONE
 
       - name: Build the Docker image
         id: valint_attest_slsa_master
@@ -68,13 +68,13 @@ jobs:
           format: attest
           force: true
           config: .valint.yaml
-          author-name: ${{ env.AUTHOR_NAME }}
-          author-email: ${{ env.AUTHOR_EMAIL }}
-          author-phone: ${{ env.AUTHOR_PHONE }}
-          supplier-name: ${{ env.SUPPLIER_NAME }}
-          supplier-url: ${{ env.SUPPLIER_URL }}
-          supplier-email: ${{ env.SUPPLIER_EMAIL }}
-          supplier-phone: ${{ env.SUPPLIER_PHONE }}
+          author-name: $AUTHOR_NAME
+          author-email: $AUTHOR_EMAIL
+          author-phone: $AUTHOR_PHONE
+          supplier-name: $SUPPLIER_NAME
+          supplier-url: $SUPPLIER_URL
+          supplier-email: $SUPPLIER_EMAIL 
+          supplier-phone: $SUPPLIER_PHONE
 
   # Step 1-b: Generate SLSA Provenance Record
   generate-provenance:
@@ -105,13 +105,13 @@ jobs:
           format: attest-slsa
           force: true
           config: .valint.yaml
-          author-name: ${{ env.AUTHOR_NAME }}
-          author-email: ${{ env.AUTHOR_EMAIL }}
-          author-phone: ${{ env.AUTHOR_PHONE }}
-          supplier-name: ${{ env.SUPPLIER_NAME }}
-          supplier-url: ${{ env.SUPPLIER_URL }}
-          supplier-email: ${{ env.SUPPLIER_EMAIL }}
-          supplier-phone: ${{ env.SUPPLIER_PHONE }}
+          author-name: $AUTHOR_NAME
+          author-email: $AUTHOR_EMAIL
+          author-phone: $AUTHOR_PHONE
+          supplier-name: $SUPPLIER_NAME
+          supplier-url: $SUPPLIER_URL
+          supplier-email: $SUPPLIER_EMAIL 
+          supplier-phone: $SUPPLIER_PHONE
 
   # Step 2a: Verify SLSA Level 1 Policy
   verify-slsa-l1:
