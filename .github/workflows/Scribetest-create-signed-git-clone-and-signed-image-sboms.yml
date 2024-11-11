@@ -65,7 +65,7 @@ jobs:
           product-key: "Shivam1"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-          format: attest-slsa
+          format: attest
           force: true
           config: .valint.yaml
           author-name: ${{ env.AUTHOR_NAME }}
