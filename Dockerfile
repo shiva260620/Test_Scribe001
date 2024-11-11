@@ -10,14 +10,16 @@ COPY package.* ./
 # Install the application dependencies
 RUN npm install
 
-# Install curl and Scribe Security CLI
+# Install curl, bash, and Syft (for SBOM generation)
 RUN apk add --no-cache curl bash && \
-    curl -sSL https://scribe.security/install | bash
+    curl -sSL https://scribe.security/install | bash && \
+    curl -sSL https://github.com/anchore/syft/releases/download/v0.70.0/syft-v0.70.0-linux-amd64 -o /usr/local/bin/syft && \
+    chmod +x /usr/local/bin/syft
 
 # Copy the source code into the container
 COPY src ./src
 
-# Optionally, generate an SBOM (if using Syft or Scribe Security)
+# Optionally, generate an SBOM (if using Syft)
 RUN syft . -o json > /app/sbom.json
 
 # Run Scribe Security checks on the generated SBOM
