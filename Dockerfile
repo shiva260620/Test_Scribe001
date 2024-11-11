@@ -1,5 +1,5 @@
-# Use a Node.js base image with Alpine for smaller size
-FROM node:20.2.0-alpine3.16
+# Use a Debian-based Node.js image for broader compatibility
+FROM node:20.2.0-bullseye
 
 # Set working directory inside the container
 WORKDIR /app
@@ -10,10 +10,10 @@ COPY package.* ./
 # Install the application dependencies
 RUN npm install
 
-# Install bash, curl, and other necessary packages for installing Syft
-RUN apk add --no-cache bash curl libc6-compat
+# Install curl to download Syft and the Scribe Security tools
+RUN apt-get update && apt-get install -y curl
 
-# Download and install Syft using a more robust method compatible with Alpine
+# Download and install Syft
 RUN curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
 
 # Verify Syft installation
