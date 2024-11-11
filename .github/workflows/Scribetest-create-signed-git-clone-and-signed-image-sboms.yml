@@ -50,6 +50,7 @@ jobs:
           supplier-phone: ${{ env.SUPPLIER_PHONE }}
 
       - name: Build the Docker image
+        id: valint_attest_slsa_master
         run: docker build . -t github-action:${{ github.sha }}
       - name: Generate signed SBOM for Docker image
         uses: scribe-security/action-bom@master
@@ -60,7 +61,7 @@ jobs:
           product-key: "Shivam1"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-          format: attest
+          format: attest-slsa
           force: true
           config: .valint.yaml
           author-name: ${{ env.AUTHOR_NAME }}
