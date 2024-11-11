@@ -20,42 +20,24 @@ env:
   SIGNER_KEY: ${{ secrets.SIGNER_KEY }}
 
 jobs:
-  # Step 1-a: Generate Signed SBOM for Docker Image
-  image-attest:
+  # Step 1: Build the Docker Image and Generate SBOM
+  image-build-and-attest:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      #packages: write
       id-token: write
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Generate signed SBOM for repository content
-        uses: scribe-security/action-bom@master
-        with:
-          target: 'git:.'
-          scribe-enable: true
-          components: commits,packages,files,dep
-          product-key: "Shivam1"
-          product-version: ${{ env.PRODUCT_VERSION }}
-          scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-          format: attest
-          author-name: ${{ env.AUTHOR_NAME }}
-          author-email: ${{ env.AUTHOR_EMAIL }}
-          author-phone: ${{ env.AUTHOR_PHONE }}
-          supplier-name: ${{ env.SUPPLIER_NAME }}
-          supplier-url: ${{ env.SUPPLIER_URL }}
-          supplier-email: ${{ env.SUPPLIER_EMAIL }}
-          supplier-phone: ${{ env.SUPPLIER_PHONE }}
-
       - name: Build the Docker image
-        id: valint_attest_slsa_master
-        run: docker build . -t github-action:${{ github.sha }}
+        id: docker_build
+        run: docker build . -t ${{ env.IMAGE_NAME }}
+
       - name: Generate signed SBOM for Docker image
         uses: scribe-security/action-bom@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: 'docker:${{ env.IMAGE_NAME }}'
           scribe-enable: true
           components: commits,packages,files,dep
           product-key: "Shivam1"
@@ -72,28 +54,26 @@ jobs:
           supplier-email: ${{ env.SUPPLIER_EMAIL }}
           supplier-phone: ${{ env.SUPPLIER_PHONE }}
 
-  # Step 1-b: Generate SLSA Provenance Record
+  # Step 2: Generate SLSA Provenance Record
   generate-provenance:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      #packages: write
       id-token: write
 
     steps:
-      - name:  Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
+      - name: Build the Docker image again (if necessary)
+        run: docker build . -t ${{ env.IMAGE_NAME }}
 
-      - name: Generate SLSA provenance
+      - name: Generate SLSA provenance record
         id: slsa_provenance
         uses: scribe-security/action-slsa@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: 'docker:${{ env.IMAGE_NAME }}'
           scribe-enable: true
           product-key: "Shivam1"
           product-version: ${{ env.PRODUCT_VERSION }}
@@ -109,12 +89,11 @@ jobs:
           supplier-email: ${{ env.SUPPLIER_EMAIL }}
           supplier-phone: ${{ env.SUPPLIER_PHONE }}
 
-  # Step 2a: Verify SLSA Level 1 Policy
+  # Step 3a: Verify SLSA Level 1 Compliance
   verify-slsa-l1:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      #packages: write
       id-token: write
 
     steps:
@@ -123,45 +102,45 @@ jobs:
           fetch-depth: 0
 
       - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
+        run: docker build . -t ${{ env.IMAGE_NAME }}
 
-      - name: Verify SLSA Level 1
+      - name: Verify SLSA Level 1 Compliance
         uses: scribe-security/action-verify@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: 'docker:${{ env.IMAGE_NAME }}'
           scribe-enable: true
           product-key: "Shivam1"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
           config: .valint.yaml
-          #rule: slsa/l1-provenance-exists@v1
-          #verbose: 2
+          rule: slsa/l1-provenance-exists@v1  # Ensure provenance exists for Level 1 compliance
+          verbose: 2
 
-  # Step 2b: Verify SLSA Level 2 Policy
+  # Step 3b: Verify SLSA Level 2 Compliance
   verify-slsa-l2:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      #packages: write
       id-token: write
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
 
-      - name: Verify SLSA Level 2
+      - name: Build the Docker image
+        run: docker build . -t ${{ env.IMAGE_NAME }}
+
+      - name: Verify SLSA Level 2 Compliance
         uses: scribe-security/action-verify@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: 'docker:${{ env.IMAGE_NAME }}'
           scribe-enable: true
           product-key: "Shivam1"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
           config: .valint.yaml
-          rule: slsa/l2-provenance-authenticated@v1
+          rule: slsa/l2-provenance-authenticated@v1  # Ensure authentication of provenance for Level 2 compliance
           verbose: 2
