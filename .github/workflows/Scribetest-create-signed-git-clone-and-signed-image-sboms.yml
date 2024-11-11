@@ -121,8 +121,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      #- name: Build the Docker image
-      #  run: docker build . -t github-action:${{ github.sha }}
+      - name: Build the Docker image
+        run: docker build . -t github-action:${{ github.sha }}
 
       - name: Verify SLSA Level 1
         uses: scribe-security/action-verify@master
@@ -149,8 +149,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      #- name: Build the Docker image
-        #run: docker build . -t github-action:${{ github.sha }}
+      - name: Build the Docker image
+        run: docker build . -t github-action:${{ github.sha }}
 
       - name: Verify SLSA Level 2
         uses: scribe-security/action-verify@master
