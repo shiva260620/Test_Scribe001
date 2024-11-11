@@ -52,10 +52,13 @@ jobs:
       - name: Build the Docker image
         run: docker build . -t github-action:${{ github.sha }}
 
+      - name: Verify Docker image exists
+        run: docker images
+
       - name: Generate signed SBOM for Docker image
         uses: scribe-security/action-bom@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: "docker:${{ env.IMAGE_NAME }}:${{ env.PRODUCT_VERSION }}"
           scribe-enable: true
           components: commits,packages,files,dep
           product-key: "Shivam"
@@ -88,7 +91,7 @@ jobs:
       - name: Generate SLSA provenance
         uses: scribe-security/action-bom@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: "docker:${{ env.IMAGE_NAME }}:${{ env.PRODUCT_VERSION }}"
           scribe-enable: true
           product-key: "Shivam"
           product-version: ${{ env.PRODUCT_VERSION }}
@@ -102,23 +105,6 @@ jobs:
           supplier-url: ${{ env.SUPPLIER_URL }}
           supplier-email: ${{ env.SUPPLIER_EMAIL }}
           supplier-phone: ${{ env.SUPPLIER_PHONE }}
-
-      # Add this new step to generate SLSA provenance id
-      - name: Generate SLSA provenance id
-        id: valint_attest_slsa_master
-        uses: scribe-security/action-bom@master
-        with:
-          target: "docker:${{ env.IMAGE_NAME }}:${{ env.PRODUCT_VERSION }}"
-          scribe-enable: true
-          product-key: ${{ env.PRODUCT_NAME }}
-          product-version: ${{ env.PRODUCT_VERSION }}
-          scribe-client-id: ${{ secrets.CLIENT_ID }}
-          scribe-client-secret: ${{ secrets.CLIENT_SECRET }}
-          scribe-url: ${{ secrets.SCRIBE_URL }}
-          scribe-login-url: ${{ secrets.SCRIBE_LOGIN_URL }}
-          scribe-auth-audience: ${{ secrets.SCRIBE_AUDIENCE }}
-          format: attest-slsa
-          force: true
 
   # Step 2a: Verify SLSA Level 1 Policy
   verify-slsa-l1:
@@ -137,7 +123,7 @@ jobs:
       - name: Verify SLSA Level 1
         uses: scribe-security/action-verify@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: "docker:${{ env.IMAGE_NAME }}:${{ env.PRODUCT_VERSION }}"
           scribe-enable: true
           product-key: "Shivam"
           product-version: ${{ env.PRODUCT_VERSION }}
@@ -164,7 +150,7 @@ jobs:
       - name: Verify SLSA Level 2
         uses: scribe-security/action-verify@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target: "docker:${{ env.IMAGE_NAME }}:${{ env.PRODUCT_VERSION }}"
           scribe-enable: true
           product-key: "Shivam"
           product-version: ${{ env.PRODUCT_VERSION }}
@@ -173,3 +159,27 @@ jobs:
           config: .valint.yaml
           rule: slsa/l2-provenance-authenticated@v1
           verbose: 2
+
+  # Step 3: Generate SLSA Provenance for the image (newly added)
+  valint_attest_slsa_master:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Generate SLSA provenance for Docker image
+        uses: scribe-security/action-bom@master
+        with:
+          target: "docker:${{ env.IMAGE_NAME }}:${{ env.PRODUCT_VERSION }}"
+          scribe-enable: true
+          product-key: ${{ env.PRODUCT_NAME }}
+          product-version: ${{ env.PRODUCT_VERSION }}
+          scribe-client-id: ${{ secrets.CLIENT_ID }}
+          scribe-client-secret: ${{ secrets.CLIENT_SECRET }}
+          scribe-url: ${{ secrets.SCRIBE_URL }}
+          scribe-login-url: ${{ secrets.SCRIBE_LOGIN_URL }}
+          scribe-auth-audience: ${{ secrets.SCRIBE_AUDIENCE }}
+          format: attest-slsa
+          force: true
