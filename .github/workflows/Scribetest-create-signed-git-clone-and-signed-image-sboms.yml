@@ -92,7 +92,7 @@ jobs:
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-          format: attest-slsa
+          format: statement-slsa
           force: true
           author-name: ${{ env.AUTHOR_NAME }}
           author-email: ${{ env.AUTHOR_EMAIL }}
