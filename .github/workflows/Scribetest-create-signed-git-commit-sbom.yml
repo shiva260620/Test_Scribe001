@@ -155,4 +155,3 @@ jobs:
           config: .valint.yaml
           rule: slsa/l2-provenance-authenticated@v1
           verbose: 2
-          
