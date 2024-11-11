@@ -7,23 +7,15 @@ scribe:
   url: https://api.scribesecurity.com
   enable: true
 attest:
-  cocosign:
-    signer:
-      x509:
-        enable: true
-        private: env://SIGNER_KEY
-        cert: env://SIGNER_CERT
-        ca: env://COMPANY_CA
-    verifier:
-      x509:
-        enable: true
-        cert: env://SIGNER_CERT
-        ca: env://COMPANY_CA
-  slsa:
-    enable: true
-    level: 2
-    provenance:
-      format: in-toto
-      builder-id: https://github.com/scribe-security/action-bom
-      materials:
-        - docker:github-action:${{ github.sha }}
+    cocosign:
+        signer:
+            x509:
+                enable: true
+                private: env://SIGNER_KEY
+                cert: env://SIGNER_CERT
+                ca: env://COMPANY_CA
+        verifier:
+            x509:
+                enable: true
+                cert: env://SIGNER_CERT
+                ca: env://COMPANY_CA
