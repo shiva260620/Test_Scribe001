@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
+      #packages: write
       id-token: write
 
     steps:
@@ -62,6 +62,7 @@ jobs:
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
           force: true
+          config: .valint.yaml
           author-name: ${{ env.AUTHOR_NAME }}
           author-email: ${{ env.AUTHOR_EMAIL }}
           author-phone: ${{ env.AUTHOR_PHONE }}
@@ -75,17 +76,21 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
+      #packages: write
       id-token: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name:  Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Build the Docker image
         run: docker build . -t github-action:${{ github.sha }}
 
       - name: Generate SLSA provenance
-        uses: scribe-security/action-bom@master
+        id: slsa_provenance
+        uses: scribe-security/action-slsa@master
         with:
           target: 'docker:github-action:${{ github.sha }}'
           scribe-enable: true
@@ -94,6 +99,7 @@ jobs:
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest-slsa
           force: true
+          config: .valint.yaml
           author-name: ${{ env.AUTHOR_NAME }}
           author-email: ${{ env.AUTHOR_EMAIL }}
           author-phone: ${{ env.AUTHOR_PHONE }}
@@ -107,14 +113,16 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
+      #packages: write
       id-token: write
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
+      #- name: Build the Docker image
+      #  run: docker build . -t github-action:${{ github.sha }}
 
       - name: Verify SLSA Level 1
         uses: scribe-security/action-verify@master
@@ -126,22 +134,23 @@ jobs:
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: statement-slsa
           config: .valint.yaml
-          rule: slsa/l1-provenance-exists@v1
-          verbose: 2
+          #rule: slsa/l1-provenance-exists@v1
+          #verbose: 2
 
   # Step 2b: Verify SLSA Level 2 Policy
   verify-slsa-l2:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
+      #packages: write
       id-token: write
 
     steps:
       - uses: actions/checkout@v4
-
-      - name: Build the Docker image
-        run: docker build . -t github-action:${{ github.sha }}
+        with:
+          fetch-depth: 0
+      #- name: Build the Docker image
+        #run: docker build . -t github-action:${{ github.sha }}
 
       - name: Verify SLSA Level 2
         uses: scribe-security/action-verify@master

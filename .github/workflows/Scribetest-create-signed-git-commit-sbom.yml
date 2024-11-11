@@ -46,7 +46,7 @@ jobs:
     # needs: increment-version
     permissions:
       contents: read
-      packages: write
+      #packages: write
       id-token: write
 
     steps:
