@@ -76,42 +76,48 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
       id-token: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
-      - name: Create SLSA provenance
-        id: slsa_provenance
-        uses: scribe-security/action-slsa@master
+      - name: Build the Docker image
+        run: docker build . -t github-action:${{ github.sha }}
+
+      - name: Generate SLSA provenance
+        uses: scribe-security/action-bom@master
         with:
           target: 'docker:github-action:${{ github.sha }}'
           scribe-enable: true
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-          format: attest
-          config: .valint.yaml
+          format: attest-slsa
           force: true
+          author-name: $AUTHOR_NAME
+          author-email: $AUTHOR_EMAIL
+          author-phone: $AUTHOR_PHONE
+          supplier-name: $SUPPLIER_NAME
+          supplier-url: $SUPPLIER_URL
+          supplier-email: $SUPPLIER_EMAIL
+          supplier-phone: $SUPPLIER_PHONE
 
   # Step 2a: Verify SLSA Level 1 Policy
   verify-slsa-l1:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
       id-token: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker build . -t github-action:${{ github.sha }}
 
       - name: Verify SLSA Level 1
-        id: slsa_ver1
         uses: scribe-security/action-verify@master
         with:
           target: 'docker:github-action:${{ github.sha }}'
@@ -129,16 +135,16 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
       id-token: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
+
+      - name: Build the Docker image
+        run: docker build . -t github-action:${{ github.sha }}
 
       - name: Verify SLSA Level 2
-        id: slsa_ver2
         uses: scribe-security/action-verify@master
         with:
           target: 'docker:github-action:${{ github.sha }}'
