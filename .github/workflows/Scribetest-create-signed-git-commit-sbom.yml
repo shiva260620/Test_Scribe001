@@ -5,8 +5,16 @@ on:
 
 env:
   IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
-  APP_NAME: Scribe-Synthetic-Testing
-  PRODUCT_VERSION: "9"
+  AUTHOR_NAME: Jane Doe
+  AUTHOR_EMAIL: info@scribesecurity.com
+  AUTHOR_PHONE: 111-1111-11
+  SUPPLIER_NAME: Scribe-Security
+  SUPPLIER_URL: www.scribesecurity.com
+  SUPPLIER_EMAIL: info@scribesecurity.com
+  SUPPLIER_PHONE: 001-001-0011
+  USER_DATA: service-binding
+  PRODUCT_NAME: Scribe-Synthetic-Testing
+  PRODUCT_VERSION: "6"
   COMPANY_CA: ${{ secrets.COMPANY_CA }}
   SIGNER_CERT: ${{ secrets.SIGNER_CERT }}
   SIGNER_KEY: ${{ secrets.SIGNER_KEY }}
@@ -17,24 +25,51 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: write
       id-token: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - uses: actions/checkout@v4
 
-      - name: Generate signed SBOM for docker image
+      - name: Generate signed SBOM for repository content
         uses: scribe-security/action-bom@master
         with:
-          target:  ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
+          target: 'git:.'
           scribe-enable: true
+          components: commits,packages,files,dep
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
-          config: .valint.yaml
+          author-name: $AUTHOR_NAME
+          author-email: $AUTHOR_EMAIL
+          author-phone: $AUTHOR_PHONE
+          supplier-name: $SUPPLIER_NAME
+          supplier-url: $SUPPLIER_URL
+          supplier-email: $SUPPLIER_EMAIL
+          supplier-phone: $SUPPLIER_PHONE
+
+      - name: Build the Docker image
+        run: docker build . -t github-action:${{ github.sha }}
+
+      - name: Generate signed SBOM for Docker image
+        uses: scribe-security/action-bom@master
+        with:
+          target: 'docker:github-action:${{ github.sha }}'
+          scribe-enable: true
+          components: commits,packages,files,dep
+          product-key: "Rahul"
+          product-version: ${{ env.PRODUCT_VERSION }}
+          scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
+          format: attest
+          force: true
+          author-name: $AUTHOR_NAME
+          author-email: $AUTHOR_EMAIL
+          author-phone: $AUTHOR_PHONE
+          supplier-name: $SUPPLIER_NAME
+          supplier-url: $SUPPLIER_URL
+          supplier-email: $SUPPLIER_EMAIL
+          supplier-phone: $SUPPLIER_PHONE
 
   # Step 1-b: Generate SLSA Provenance Record
   generate-provenance:
@@ -53,13 +88,14 @@ jobs:
         id: slsa_provenance
         uses: scribe-security/action-slsa@master
         with:
-          target:  ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
+          target: 'docker:github-action:${{ github.sha }}'
           scribe-enable: true
           product-key: "Rahul"
-          product-version: "6"
+          product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
           config: .valint.yaml
+          force: true
 
   # Step 2a: Verify SLSA Level 1 Policy
   verify-slsa-l1:
@@ -78,7 +114,7 @@ jobs:
         id: slsa_ver1
         uses: scribe-security/action-verify@master
         with:
-          target:  ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
+          target: 'docker:github-action:${{ github.sha }}'
           scribe-enable: true
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
@@ -105,7 +141,7 @@ jobs:
         id: slsa_ver2
         uses: scribe-security/action-verify@master
         with:
-          target:  ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
+          target: 'docker:github-action:${{ github.sha }}'
           scribe-enable: true
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
