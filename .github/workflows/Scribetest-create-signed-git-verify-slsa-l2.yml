@@ -1,19 +1,12 @@
 name: Verify SLSA Level 2 Policy
 
 on:
-  # schedule:
-  #    - cron:  '0 * * * *'
   workflow_dispatch:
+
 env:
   IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
   AUTHOR_NAME: Jane Doe
   AUTHOR_EMAIL: info@scribesecurity.com
-  AUTHOR_PHONE: 111-1111-11
-  SUPPLIER_NAME: Scribe-Security
-  SUPPLIER_URL: www.scribesecurity.com
-  SUPPLIER_EMAIL: info@scribesecurity.com
-  SUPPLIER_PHONE: 001-001-0011
-  USER_DATA: service-binding
   PRODUCT_VERSION: "9"
   PRODUCT_NAME: Scribe-Synthetic-Testing
   COMPANY_CA: ${{ secrets.COMPANY_CA }}
@@ -38,12 +31,12 @@ jobs:
         id: slsa_ver2
         uses: scribe-security/action-verify@master
         with:
-          target: 'git:.'
+          target: ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}-${{ github.run_number }}
           scribe-enable: true
-          product-key: "Rahul"
+          product-key: ${{ env.PRODUCT_NAME }}
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
           config: .valint.yaml
           rule: slsa/l2-provenance-authenticated@v1
-          verbose: 2
+          verbose: 3
