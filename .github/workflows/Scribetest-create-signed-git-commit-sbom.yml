@@ -28,7 +28,7 @@ jobs:
       - name: Generate signed SBOM for docker image
         uses: scribe-security/action-bom@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target:  ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
           scribe-enable: true
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
@@ -53,7 +53,7 @@ jobs:
         id: slsa_provenance
         uses: scribe-security/action-slsa@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target:  ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
           scribe-enable: true
           product-key: "Rahul"
           product-version: "6"
@@ -78,7 +78,7 @@ jobs:
         id: slsa_ver1
         uses: scribe-security/action-verify@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target:  ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
           scribe-enable: true
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
@@ -105,7 +105,7 @@ jobs:
         id: slsa_ver2
         uses: scribe-security/action-verify@master
         with:
-          target: 'docker:github-action:${{ github.sha }}'
+          target:  ${{ secrets.DOCKER_USERNAME }}/scribe-training-app:${{ github.sha }}
           scribe-enable: true
           product-key: "Rahul"
           product-version: ${{ env.PRODUCT_VERSION }}
