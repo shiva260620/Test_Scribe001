@@ -105,6 +105,12 @@ jobs:
           supplier-email: ${{ env.SUPPLIER_EMAIL }}
           supplier-phone: ${{ env.SUPPLIER_PHONE }}
 
+      - name: Upload SLSA provenance output
+        uses: actions/upload-artifact@v2
+        with:
+          name: provenance
+          path: ${{ steps.valint_attest_slsa_master.outputs.OUTPUT_PATH }}
+
   # Step 2a: Verify SLSA Level 1 Policy
   verify-slsa-l1:
     runs-on: ubuntu-latest
@@ -130,7 +136,7 @@ jobs:
           format: statement-slsa
           config: .valint.yaml
           rule: slsa/l1-provenance-exists@v2
-          verbose: 2
+          verbose: 3
 
   # Step 2b: Verify SLSA Level 2 Policy
   verify-slsa-l2:
@@ -157,4 +163,4 @@ jobs:
           format: attest
           config: .valint.yaml
           rule: slsa/l2-provenance-authenticated@v2
-          verbose: 2
+          verbose: 3
