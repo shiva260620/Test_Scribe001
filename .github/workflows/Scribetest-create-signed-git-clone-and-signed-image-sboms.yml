@@ -87,7 +87,7 @@ jobs:
         run: docker build . -t github-action:${{ github.sha }}
 
       - name: Generate SLSA provenance
-        uses: scribe-security/action-bom@master
+        uses: scribe-security/action-slsa@master
         with:
           target: 'docker:github-action:${{ github.sha }}'
           scribe-enable: true
