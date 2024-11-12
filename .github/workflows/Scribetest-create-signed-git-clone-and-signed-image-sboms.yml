@@ -160,7 +160,7 @@ jobs:
           product-key: "01"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-          format: attest
+          format: statement-slsa
           config: .valint.yaml
           rule: slsa/l2-provenance-authenticated@v2
           verbose: 3
