@@ -127,9 +127,9 @@ jobs:
           product-key: "01"
           product-version: ${{ env.PRODUCT_VERSION }}
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
-          format: attest
+          format: statement-slsa
           config: .valint.yaml
-          rule: slsa/l1-provenance-exists@v1
+          rule: slsa/l1-provenance-exists@v2
           verbose: 2
 
   # Step 2b: Verify SLSA Level 2 Policy
@@ -156,5 +156,5 @@ jobs:
           scribe-client-secret: ${{ secrets.SCRIBE_TOKEN }}
           format: attest
           config: .valint.yaml
-          rule: slsa/l2-provenance-authenticated@v1
+          rule: slsa/l2-provenance-authenticated@v2
           verbose: 2
